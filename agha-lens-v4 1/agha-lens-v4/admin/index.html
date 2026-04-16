@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Login — Through Agha Lens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@400;500;600;700&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-void:#080a0f;--bg-card:#1a1d2e;
+  --gold:#c9962a;--gold-mid:#dea83a;--gold-bright:#f0c858;
+  --em:#2e8c5a;--em-bright:#3db872;
+  --nv:#1a3a6e;--nv-bright:#2d62b8;
+  --text-1:#f2eed8;--text-2:#c8c0a0;--text-3:#8a8068;--text-4:#554e3a;
+  --border-gold:rgba(201,150,42,0.28);--border-gold-h:rgba(201,150,42,0.55);
+  --border-glass:rgba(255,255,255,0.07);
+  --glass-1:rgba(255,255,255,0.03);
+  --shadow-lg:0 24px 64px rgba(0,0,0,0.7);
+  --shadow-gold:0 4px 24px rgba(201,150,42,0.15);
+}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  background:var(--bg-void);color:var(--text-1);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 110%, rgba(201,150,42,0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 35% at 10% 10%, rgba(46,140,90,0.055) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 40% at 90% 5%, rgba(26,58,110,0.07) 0%, transparent 55%);
+}
+.edge-top,.edge-bottom{position:fixed;left:0;right:0;height:2px;z-index:5;pointer-events:none}
+.edge-top{top:0;background:linear-gradient(90deg,transparent 0%,var(--em) 12%,var(--gold) 30%,var(--gold-bright) 50%,var(--gold) 70%,var(--nv-bright) 88%,transparent 100%);opacity:0.65}
+.edge-bottom{bottom:0;background:linear-gradient(90deg,transparent 0%,var(--nv-bright) 15%,var(--gold) 50%,var(--em) 85%,transparent 100%);opacity:0.4}
+.corner{position:fixed;z-index:4;pointer-events:none}
+.corner.tl{top:1rem;left:1rem}.corner.tr{top:1rem;right:1rem;transform:scaleX(-1)}
+.corner.bl{bottom:1rem;left:1rem;transform:scaleY(-1)}.corner.br{bottom:1rem;right:1rem;transform:scale(-1)}
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0}
+.orb-1{width:500px;height:500px;top:-200px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(201,150,42,0.05) 0%,transparent 70%);animation:oP 9s ease-in-out infinite}
+.orb-2{width:350px;height:350px;bottom:-100px;left:10%;background:radial-gradient(circle,rgba(46,140,90,0.055) 0%,transparent 68%);animation:oP 12s 3s ease-in-out infinite}
+@keyframes oP{0%,100%{opacity:0.5}50%{opacity:1}}
+.login-card{
+  position:relative;z-index:10;
+  background:var(--bg-card);border:1px solid var(--border-gold);border-radius:8px;
+  padding:2.5rem 2.6rem;width:380px;max-width:calc(100vw - 2rem);
+  box-shadow:var(--shadow-lg),var(--shadow-gold);
+  animation:cardIn 0.7s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(28px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.login-card::before{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--gold-mid),transparent)}
+.login-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 90% 45% at 50% -10%, rgba(201,150,42,0.04) 0%, transparent 60%);pointer-events:none;border-radius:8px}
+.login-mark{width:44px;height:44px;margin:0 auto 1rem;border:1px solid var(--border-gold-h);display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--gold-mid);position:relative}
+.login-mark::before{content:'';position:absolute;inset:4px;border:1px solid rgba(201,150,42,0.18);pointer-events:none}
+.login-eyebrow{font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--text-4);text-align:center;margin-bottom:0.5rem;display:block}
+.login-title{font-family:'Cinzel',serif;font-size:1.15rem;font-weight:600;letter-spacing:0.08em;color:var(--gold-bright);text-align:center;margin-bottom:0.22rem}
+.login-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:0.82rem;color:var(--text-4);text-align:center;margin-bottom:1.8rem}
+.login-divider{height:1px;margin:0 0 1.8rem;background:linear-gradient(90deg,transparent,var(--border-gold-h),transparent)}
+.form-group{margin-bottom:1rem}
+.form-label{display:block;font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-4);margin-bottom:0.42rem}
+.form-input{
+  width:100%;background:var(--glass-1);border:1px solid var(--border-glass);border-radius:3px;
+  color:var(--text-1);padding:0.62rem 0.85rem;
+  font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:300;
+  outline:none;transition:all 0.25s;
+}
+.form-input::placeholder{color:var(--text-4)}
+.form-input:focus{border-color:var(--border-gold);background:rgba(201,150,42,0.04);box-shadow:0 0 0 3px rgba(201,150,42,0.06)}
+.login-btn{
+  width:100%;margin-top:0.5rem;
+  font-family:'Cinzel',serif;font-size:0.68rem;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold-mid) 100%);
+  color:#0d0a00;border:none;border-radius:3px;padding:0.88rem;cursor:pointer;transition:all 0.3s ease;
+}
+.login-btn:hover{background:linear-gradient(135deg,var(--gold-mid) 0%,var(--gold-bright) 100%);transform:translateY(-2px);box-shadow:0 6px 20px rgba(201,150,42,0.35)}
+.login-btn:disabled{opacity:0.55;cursor:not-allowed;transform:none;box-shadow:none}
+.error-msg{font-style:italic;color:#e07060;font-family:'Playfair Display',serif;font-size:0.84rem;text-align:center;margin-top:0.8rem;min-height:1.2em}
+.back-link{display:block;text-align:center;margin-top:1.2rem;font-family:'DM Sans',sans-serif;font-size:0.65rem;font-weight:300;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-4);text-decoration:none;transition:color 0.2s}
+.back-link:hover{color:var(--text-2)}
+.spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(13,10,0,0.3);border-top-color:#0d0a00;border-radius:50%;animation:sp 0.7s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="edge-top"></div>
+<div class="edge-bottom"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="corner tl"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><line x1="2" y1="2" x2="17" y2="2" stroke="rgba(201,150,42,0.7)" stroke-width="1.5"/><line x1="2" y1="2" x2="2" y2="17" stroke="rgba(201,150,42,0.7)" stroke-width="1.5"/><rect x="5" y="5" width="9" height="9" fill="none" stroke="rgba(201,150,42,0.18)" stroke-width="1"/><circle cx="8" cy="8" r="1.5" fill="rgba(201,150,42,0.5)"/></svg></div>
+<div class="corner tr"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><line x1="2" y1="2" x2="17" y2="2" stroke="rgba(46,140,90,0.6)" stroke-width="1.5"/><line x1="2" y1="2" x2="2" y2="17" stroke="rgba(46,140,90,0.6)" stroke-width="1.5"/><rect x="5" y="5" width="9" height="9" fill="none" stroke="rgba(46,140,90,0.15)" stroke-width="1"/><circle cx="8" cy="8" r="1.5" fill="rgba(46,140,90,0.45)"/></svg></div>
+<div class="corner bl"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><line x1="2" y1="2" x2="17" y2="2" stroke="rgba(240,200,88,0.5)" stroke-width="1.5"/><line x1="2" y1="2" x2="2" y2="17" stroke="rgba(240,200,88,0.5)" stroke-width="1.5"/><rect x="5" y="5" width="9" height="9" fill="none" stroke="rgba(240,200,88,0.14)" stroke-width="1"/><circle cx="8" cy="8" r="1.5" fill="rgba(240,200,88,0.4)"/></svg></div>
+<div class="corner br"><svg width="36" height="36" viewBox="0 0 36 36" fill="none"><line x1="2" y1="2" x2="17" y2="2" stroke="rgba(45,98,184,0.55)" stroke-width="1.5"/><line x1="2" y1="2" x2="2" y2="17" stroke="rgba(45,98,184,0.55)" stroke-width="1.5"/><rect x="5" y="5" width="9" height="9" fill="none" stroke="rgba(45,98,184,0.15)" stroke-width="1"/><circle cx="8" cy="8" r="1.5" fill="rgba(45,98,184,0.45)"/></svg></div>
+
+<div class="login-card">
+  <div class="login-mark">✦</div>
+  <span class="login-eyebrow">Administrator Access</span>
+  <h1 class="login-title">Through Agha Lens</h1>
+  <p class="login-sub">Private entrance — authorised only</p>
+  <div class="login-divider"></div>
+
+  <div class="form-group">
+    <label class="form-label">Email Address</label>
+    <input class="form-input" type="email" id="email" placeholder="your@email.com" autocomplete="email"/>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Password</label>
+    <input class="form-input" type="password" id="password" placeholder="••••••••" autocomplete="current-password"/>
+  </div>
+
+  <button class="login-btn" id="login-btn" onclick="doLogin()">Enter Studio</button>
+  <p class="error-msg" id="error-msg"></p>
+  <a href="../gallery.html" class="back-link">← Back to Gallery</a>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const sb = createClient('https://rijljjugqpmjfrcdduhn.supabase.co','sb_publishable_O-WeI6yoJ8QThv6ZSnxsvw_r8__-Ojz');
+const { data: { session } } = await sb.auth.getSession();
+if (session) window.location.href = 'dashboard.html';
+window.doLogin = async function() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('login-btn');
+  const err = document.getElementById('error-msg');
+  if (!email || !password) { err.textContent = 'Please enter your email and password.'; return; }
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Entering…'; err.textContent = '';
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) { err.textContent = 'Invalid credentials. Please try again.'; btn.disabled = false; btn.textContent = 'Enter Studio'; return; }
+  window.location.href = 'dashboard.html';
+};
+document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+</script>
+</body>
+</html>

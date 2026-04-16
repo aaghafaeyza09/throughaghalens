@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Gallery — Through Agha Lens</title>
+<meta name="description" content="Browse the photography of Agha Faeyza — landscapes, nature, and beyond."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+/* Page-specific: ambient background glow */
+.page-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 40% at 20% 80%, rgba(46,140,90,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(26,58,110,0.05) 0%, transparent 55%);
+}
+
+/* Page transition in */
+.page-enter { animation: pageEnterAnim 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+@keyframes pageEnterAnim {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Gallery meta count pulse */
+.count-num {
+  color: var(--gold-bright);
+  font-variant-numeric: tabular-nums;
+  transition: all 0.3s;
+}
+
+/* View toggle */
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.view-btn {
+  background: var(--glass-1);
+  border: 1px solid var(--border-glass);
+  color: var(--text-4);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all var(--t-mid);
+  border-radius: var(--radius-sm);
+}
+.view-btn:hover { color: var(--text-2); border-color: var(--border-gold); }
+.view-btn.active { color: var(--gold-bright); border-color: var(--border-gold-h); background: rgba(201,150,42,0.06); }
+
+/* Grid views */
+#photo-grid.view-grid { columns: 4 220px; column-gap: 14px; }
+#photo-grid.view-list { columns: unset; display: flex; flex-direction: column; gap: 1px; }
+#photo-grid.view-list .photo-card {
+  display: flex;
+  flex-direction: row;
+  break-inside: auto;
+  margin-bottom: 0;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  background: transparent;
+}
+#photo-grid.view-list .photo-card:hover { transform: none; box-shadow: none; background: var(--glass-1); }
+#photo-grid.view-list .card-img { width: 90px; height: 68px; flex-shrink: 0; }
+#photo-grid.view-list .card-img img { height: 100%; object-fit: cover; }
+#photo-grid.view-list .card-img::after { display: none; }
+#photo-grid.view-list .card-body { display: flex; align-items: center; gap: 1rem; padding: 0 1rem; flex: 1; }
+#photo-grid.view-list .card-title { font-size: 0.78rem; white-space: nowrap; }
+#photo-grid.view-list .card-desc { display: none; }
+#photo-grid.view-list .card-overlay { display: none; }
+
+/* Scroll reveal for cards */
+.photo-card { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.photo-card.visible { opacity: 1; transform: translateY(0); }
+.photo-card.in-grid { animation: cardFadeIn 0.5s var(--ease-smooth) both; opacity: 1; transform: none; }
+
+/* Floating frame accent on featured cards */
+.photo-card.feat {
+  position: relative;
+}
+.photo-card.feat::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border: 1px solid rgba(201,150,42,0.12);
+  z-index: -1;
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+  transition: all var(--t-mid);
+}
+.photo-card.feat:hover::before {
+  inset: -8px;
+  border-color: rgba(201,150,42,0.25);
+}
+
+/* Emerald accent badge for nature shots */
+.cat-badge.cat-nature { background: rgba(46,140,90,0.12); border-color: rgba(46,140,90,0.3); color: var(--em-bright); }
+.cat-badge.cat-landscape { background: rgba(26,58,110,0.12); border-color: rgba(26,58,110,0.35); color: var(--nv-bright); }
+.cat-badge.cat-astrophotography {
+  background: rgba(26,58,110,0.15);
+  border-color: rgba(45,98,184,0.4);
+  color: #7ba8e8;
+}
+</style>
+</head>
+<body>
+
+<div class="page-bg"></div>
+
+<!-- ═══ HEADER ═══ -->
+<header class="site-header">
+  <div class="header-top">
+    <a href="index.html" class="logo">
+      <div class="logo-mark">✦</div>
+      Through Agha Lens
+    </a>
+    <div class="header-actions">
+      <span id="loading-indicator" style="display:none;color:var(--gold);font-size:0.75rem;letter-spacing:0.1em;align-items:center;gap:6px;">
+        <span class="spinner"></span>
+      </span>
+      <a href="https://instagram.com/aagha_photography" target="_blank" class="btn">
+        <span>📷</span>
+        <span>Instagram</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="controls-bar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search-input" placeholder="Search photographs…" oninput="filterGallery()"/>
+    </div>
+    <select class="ctrl-select" id="sort-select" onchange="filterGallery()">
+      <option value="newest">Newest First</option>
+      <option value="oldest">Oldest First</option>
+      <option value="az">Title A–Z</option>
+      <option value="za">Title Z–A</option>
+    </select>
+    <div class="view-toggle" style="margin-left:auto">
+      <button class="view-btn active" id="btn-grid" title="Grid View" onclick="setView('grid')">⊞</button>
+      <button class="view-btn" id="btn-list" title="List View" onclick="setView('list')">☰</button>
+    </div>
+  </div>
+
+  <div class="cat-bar" id="cat-bar">
+    <button class="cat-tab active" onclick="setCategory('All',this)">All</button>
+  </div>
+</header>
+
+<!-- ═══ GALLERY ═══ -->
+<main class="gallery-wrap page-enter" style="position:relative;z-index:1">
+  <div class="gallery-meta">
+    <span class="meta-label">
+      <span class="count-num" id="count-label">Loading…</span>
+    </span>
+    <span style="font-family:var(--font-label);font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-4);">
+      @aagha_photography
+    </span>
+  </div>
+  <div id="photo-grid" class="view-grid">
+    <div class="empty-state">
+      <span class="empty-icon">✦</span>
+      <p>Loading photographs…</p>
+    </div>
+  </div>
+</main>
+
+<!-- ═══ PROFILE CARD ═══ -->
+<div class="profile-card">
+  <div class="profile-avatar">A</div>
+  <div class="profile-info">
+    <div class="profile-name">Agha Faeyza</div>
+    <div class="profile-links">
+      <a class="profile-link" href="https://instagram.com/aagha_photography" target="_blank">IG</a>
+      <a class="profile-link" href="https://threads.net/@aagha_photography" target="_blank">Threads</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LIGHTBOX ═══ -->
+<div id="lightbox" onclick="handleLbBg(event)">
+  <button class="lb-close" onclick="closeLb()">✕</button>
+  <div class="lb-img-wrap">
+    <img id="lb-img" src="" alt=""/>
+  </div>
+  <div class="lb-meta">
+    <h3 id="lb-title"></h3>
+    <p id="lb-desc"></p>
+  </div>
+  <div class="lb-nav">
+    <button class="btn" onclick="navLb(-1)">◂ Prev</button>
+    <a id="lb-dl" class="lb-dl" download>⤓ Download</a>
+    <button class="btn" onclick="navLb(1)">Next ▸</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const SUPABASE_URL  = 'https://rijljjugqpmjfrcdduhn.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_O-WeI6yoJ8QThv6ZSnxsvw_r8__-Ojz';
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+let allPhotos = [];
+let filtered  = [];
+let activeCategory = 'All';
+let lbIndex = 0;
+let currentView = 'grid';
+
+// ── LOAD ──
+async function loadPhotos() {
+  document.getElementById('loading-indicator').style.display = 'inline-flex';
+  const { data, error } = await sb
+    .from('photos')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  document.getElementById('loading-indicator').style.display = 'none';
+
+  if (error) {
+    console.error(error);
+    renderEmpty('Could not load photographs. Please try again later.');
+    return;
+  }
+
+  allPhotos = data || [];
+  buildCategoryBar();
+  filterGallery();
+}
+
+function buildCategoryBar() {
+  const cats = ['All', ...new Set(allPhotos.map(p => p.category).filter(Boolean))];
+  const bar = document.getElementById('cat-bar');
+  bar.innerHTML = cats.map(c =>
+    `<button class="cat-tab ${c === activeCategory ? 'active' : ''}" onclick="setCategory('${c}',this)">${c}</button>`
+  ).join('');
+}
+
+window.setCategory = function(cat, el) {
+  activeCategory = cat;
+  document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  filterGallery();
+};
+
+window.filterGallery = function() {
+  const q    = document.getElementById('search-input').value.toLowerCase();
+  const sort = document.getElementById('sort-select').value;
+
+  filtered = allPhotos.filter(p => {
+    const catOk    = activeCategory === 'All' || p.category === activeCategory;
+    const searchOk = !q ||
+      (p.title||'').toLowerCase().includes(q) ||
+      (p.description||'').toLowerCase().includes(q) ||
+      (p.category||'').toLowerCase().includes(q);
+    return catOk && searchOk;
+  });
+
+  filtered.sort((a, b) => {
+    if (sort === 'newest') return new Date(b.created_at) - new Date(a.created_at);
+    if (sort === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
+    if (sort === 'az')     return (a.title||'').localeCompare(b.title||'');
+    if (sort === 'za')     return (b.title||'').localeCompare(a.title||'');
+    return 0;
+  });
+
+  renderGallery();
+};
+
+function getBadgeClass(category) {
+  if (!category) return '';
+  const lower = category.toLowerCase();
+  if (lower === 'nature')          return 'cat-nature';
+  if (lower === 'landscape')       return 'cat-landscape';
+  if (lower === 'astrophotography') return 'cat-astrophotography';
+  return '';
+}
+
+function renderGallery() {
+  const label = document.getElementById('count-label');
+  const grid  = document.getElementById('photo-grid');
+
+  const countText = `<span>${filtered.length}</span> ${filtered.length === 1 ? 'photograph' : 'photographs'}` +
+    (activeCategory !== 'All' ? ` &middot; ${activeCategory}` : '');
+  label.innerHTML = countText;
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state"><span class="empty-icon">✦</span><p>No photographs found.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map((p, i) => `
+    <div class="photo-card in-grid${i < 6 ? ' feat' : ''}" style="animation-delay:${i * 0.04}s" onclick="openLb(${i})">
+      <div class="card-img">
+        <img src="${p.public_url}" alt="${p.title || 'Photograph'}" loading="lazy"/>
+      </div>
+      <div class="card-overlay">
+        <button class="ov-btn" title="View Full Screen">⛶</button>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${p.title || 'Untitled'}</div>
+        <div class="card-desc">${p.description || '&nbsp;'}</div>
+        <div class="card-meta">
+          <span class="cat-badge ${getBadgeClass(p.category)}">${p.category || '–'}</span>
+          <span class="date-badge">${formatDate(p.created_at)}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Scroll reveal via IntersectionObserver
+  initReveal();
+}
+
+function initReveal() {
+  if (!('IntersectionObserver' in window)) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        en.target.classList.add('visible');
+        obs.unobserve(en.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.photo-card.in-grid').forEach(el => obs.observe(el));
+}
+
+function renderEmpty(msg) {
+  document.getElementById('photo-grid').innerHTML =
+    `<div class="empty-state"><span class="empty-icon">✦</span><p>${msg}</p></div>`;
+  document.getElementById('count-label').innerHTML = '0 photographs';
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+// ── VIEW TOGGLE ──
+window.setView = function(view) {
+  currentView = view;
+  const grid = document.getElementById('photo-grid');
+  grid.className = view === 'grid' ? 'view-grid' : 'view-list';
+  document.getElementById('btn-grid').classList.toggle('active', view === 'grid');
+  document.getElementById('btn-list').classList.toggle('active', view === 'list');
+};
+
+// ── LIGHTBOX ──
+window.openLb = function(i) {
+  lbIndex = i;
+  updateLb();
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+};
+function updateLb() {
+  const p = filtered[lbIndex];
+  const img = document.getElementById('lb-img');
+  img.style.opacity = '0';
+  img.src = p.public_url;
+  img.onload = () => { img.style.transition = 'opacity 0.4s'; img.style.opacity = '1'; };
+  document.getElementById('lb-title').textContent = p.title || 'Untitled';
+  document.getElementById('lb-desc').textContent =
+    [p.description, p.category, formatDate(p.created_at)].filter(Boolean).join(' · ');
+  const dl = document.getElementById('lb-dl');
+  dl.href     = p.public_url;
+  dl.download = (p.title || 'photo') + '.jpg';
+}
+window.closeLb = function() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+};
+window.handleLbBg = function(e) {
+  if (e.target === document.getElementById('lightbox')) closeLb();
+};
+window.navLb = function(dir) {
+  lbIndex = (lbIndex + dir + filtered.length) % filtered.length;
+  updateLb();
+};
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('active')) return;
+  if (e.key === 'ArrowLeft')  navLb(-1);
+  if (e.key === 'ArrowRight') navLb(1);
+  if (e.key === 'Escape')     closeLb();
+});
+
+loadPhotos();
+</script>
+</body>
+</html>
